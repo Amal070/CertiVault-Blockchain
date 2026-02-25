@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard - CertiVault</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            min-height: 100vh;
+            color: #fff;
+        }
+
+        /* Navigation */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 50px;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            color: #00ff88;
+            text-decoration: none;
+        }
+
+        .logo span {
+            color: #fff;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: #fff;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            background: rgba(0, 255, 136, 0.2);
+            color: #00ff88;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #00ff88, #00cc6a);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0f0c29;
+            font-weight: 700;
+        }
+
+        /* Main Content */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .welcome-section {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .welcome-section h1 {
+            font-size: 42px;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, #00ff88, #00d4ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .welcome-section p {
+            color: #aaa;
+            font-size: 18px;
+        }
+
+        /* Cards Grid */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border-color: #00ff88;
+        }
+
+        .card-icon {
+            font-size: 50px;
+            margin-bottom: 20px;
+        }
+
+        .card h3 {
+            font-size: 24px;
+            margin-bottom: 15px;
+            color: #00ff88;
+        }
+
+        .card p {
+            color: #aaa;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .card-btn {
+            display: inline-block;
+            padding: 12px 25px;
+            background: linear-gradient(135deg, #00ff88, #00cc6a);
+            color: #0f0c29;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .card-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 255, 136, 0.4);
+        }
+
+        /* Upload Section */
+        .upload-section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .upload-section h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #00ff88;
+        }
+
+        .upload-area {
+            border: 2px dashed rgba(0, 255, 136, 0.5);
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .upload-area:hover {
+            border-color: #00ff88;
+            background: rgba(0, 255, 136, 0.1);
+        }
+
+        .upload-icon {
+            font-size: 60px;
+            margin-bottom: 15px;
+        }
+
+        .upload-area p {
+            color: #aaa;
+            margin-bottom: 10px;
+        }
+
+        .upload-area span {
+            color: #00ff88;
+            font-weight: 600;
+        }
+
+        /* How It Works */
+        .how-it-works {
+            margin-top: 50px;
+            padding: 30px;
+            background: rgba(0, 212, 255, 0.1);
+            border-radius: 15px;
+            border: 1px solid rgba(0, 212, 255, 0.3);
+        }
+
+        .how-it-works h3 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #00d4ff;
+        }
+
+        .steps {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .step {
+            text-align: center;
+            max-width: 200px;
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #00ff88, #00d4ff);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            font-weight: 700;
+            color: #0f0c29;
+        }
+
+        .step p {
+            color: #aaa;
+            font-size: 14px;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #888;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 50px;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            nav {
+                flex-direction: column;
+                gap: 15px;
+                padding: 15px;
+            }
+
+            .welcome-section h1 {
+                font-size: 28px;
+            }
+
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .steps {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="/" class="logo">🔗 Certi<span>Vault</span></a>
+    <div class="nav-links">
+        <div class="user-info">
+            <div class="user-avatar">{{ request.user.username|make_list|first|upper }}</div>
+            <span>{{ request.user.username }}</span>
+        </div>
+        <a href="{% url 'logout' %}">Logout</a>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="welcome-section">
+        <h1>Welcome, {{ request.user.username }}!</h1>
+        <p>Verify certificates instantly using blockchain technology</p>
+    </div>
+
+    <div class="cards-grid">
+        <div class="card">
+            <div class="card-icon">📜</div>
+            <h3>Verify Certificate</h3>
+            <p>Upload a certificate to verify its authenticity using blockchain technology. Get instant results.</p>
+            <a href="#" class="card-btn">Verify Now</a>
+        </div>
+
+        <div class="card">
+            <div class="card-icon">📋</div>
+            <h3>View History</h3>
+            <p>Access your previous certificate verification history and download verification reports.</p>
+            <a href="#" class="card-btn">View History</a>
+        </div>
+
+        <div class="card">
+            <div class="card-icon">ℹ️</div>
+            <h3>How It Works</h3>
+            <p>Learn how our AI-powered system verifies certificates against blockchain records.</p>
+            <a href="#" class="card-btn">Learn More</a>
+        </div>
+    </div>
+
+    <div class="upload-section">
+        <h2>🔍 Certificate Verification</h2>
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="upload-area">
+                <div class="upload-icon">📁</div>
+                <p>Drag and drop your certificate here</p>
+                <p>or <span>browse files</span></p>
+                <input type="file" name="certificate" accept=".pdf,.jpg,.jpeg,.png" style="display: none;">
+            </div>
+            <button type="submit" class="card-btn" style="width: 100%;">Verify Certificate</button>
+        </form>
+
+        <div class="how-it-works">
+            <h3>Verification Process</h3>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <p>Upload Certificate</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <p>Generate Hash</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <p>Check Blockchain</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <p>Get Result</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <p>© 2026 CertiVault | Secure Blockchain Certificate Verification</p>
+</footer>
+
+</body>
+</html>
