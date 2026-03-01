@@ -1,54 +1,78 @@
 from web3 import Web3
+from eth_account import Account
+from .config import GANACHE_RPC, PRIVATE_KEY, CONTRACT_ADDRESS
 
-# Connect to Ganache
-ganache_url = "http://127.0.0.1:7545"
-web3 = Web3(Web3.HTTPProvider(ganache_url))
 
-if not web3.is_connected():
-    print("❌ Blockchain not connected")
-else:
-    print("✅ Blockchain connected")
-
-# Replace with your Ganache account address
-account_address = "PASTE_ACCOUNT_ADDRESS"
-
-# Replace with private key (click key icon in Ganache)
-private_key = "PASTE_PRIVATE_KEY"
-
-# Replace with deployed contract address
-contract_address = "PASTE_CONTRACT_ADDRESS"
-
-# Paste ABI JSON here
+# Paste ABI returned from deploy here
 contract_abi = [
-    # PASTE ABI HERE
+    {
+        'inputs': [{'internalType': 'string', 'name': '', 'type': 'string'}],
+        'name': 'certificates',
+        'outputs': [{'internalType': 'bool', 'name': '', 'type': 'bool'}],
+        'stateMutability': 'view',
+        'type': 'function'
+    },
+    {
+        'inputs': [{'internalType': 'string', 'name': '_hash', 'type': 'string'}],
+        'name': 'storeCertificate',
+        'outputs': [],
+        'stateMutability': 'nonpayable',
+        'type': 'function'
+    },
+    {
+        'inputs': [{'internalType': 'string', 'name': '_hash', 'type': 'string'}],
+        'name': 'verifyCertificate',
+        'outputs': [{'internalType': 'bool', 'name': '', 'type': 'bool'}],
+        'stateMutability': 'view',
+        'type': 'function'
+    }
 ]
 
+
+# Connect to Ganache
+web3 = Web3(Web3.HTTPProvider(GANACHE_RPC))
+
+if not web3.is_connected():
+    raise Exception("❌ Blockchain not connected")
+
+
+# Load contract
 contract = web3.eth.contract(
-    address=contract_address,
+    address=CONTRACT_ADDRESS,
     abi=contract_abi
 )
 
+# Load account
+account = Account.from_key(PRIVATE_KEY)
+account_address = account.address
 
+
+# -----------------------------
+# Store Certificate Hash
+# -----------------------------
 def store_hash_on_blockchain(hash_value):
 
     nonce = web3.eth.get_transaction_count(account_address)
 
     transaction = contract.functions.storeCertificate(hash_value).build_transaction({
-        'from': account_address,
-        'nonce': nonce,
-        'gas': 2000000,
-        'gasPrice': web3.to_wei('20', 'gwei')
+        "from": account_address,
+        "nonce": nonce,
+        "gas": 2000000,
+        "gasPrice": web3.eth.gas_price,
     })
 
-    signed_tx = web3.eth.account.sign_transaction(transaction, private_key)
+    signed_tx = account.sign_transaction(transaction)
 
-    tx_hash = web3.eth.send_raw_transaction(signed_tx.rawTransaction)
+    tx_hash = web3.eth.send_raw_transaction(signed_tx.raw_transaction)
 
     receipt = web3.eth.wait_for_transaction_receipt(tx_hash)
 
     return receipt.transactionHash.hex()
 
 
+# -----------------------------
+# Verify Certificate Hash
+# -----------------------------
 def verify_hash_from_blockchain(hash_value):
 
     return contract.functions.verifyCertificate(hash_value).call()
