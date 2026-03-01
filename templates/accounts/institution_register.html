@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Institution Register - CertiVault</title>
+    <title>Institute Registration - CertiVault</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
@@ -18,8 +18,8 @@
             min-height: 100vh;
             display: flex;
             justify-content: center;
-            align-items: center;
-            padding: 20px;
+            align-items: flex-start;
+            padding: 40px 20px;
         }
 
         .container {
@@ -28,14 +28,14 @@
             border-radius: 20px;
             padding: 40px;
             width: 100%;
-            max-width: 450px;
+            max-width: 700px;
             border: 1px solid rgba(255, 255, 255, 0.2);
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
         }
 
         .logo {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 10px;
         }
 
         .logo a {
@@ -48,7 +48,7 @@
         h2 {
             text-align: center;
             color: #fff;
-            margin-bottom: 30px;
+            margin-bottom: 5px;
             font-size: 28px;
         }
 
@@ -59,84 +59,165 @@
             font-size: 14px;
         }
 
-        .error {
-            background: rgba(255, 100, 100, 0.2);
-            border: 1px solid #ff6464;
-            color: #ff6464;
-            padding: 12px 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            text-align: center;
-            font-size: 14px;
+        .form-section {
+            margin-bottom: 30px;
         }
 
-        form {
+        .section-title {
+            color: #00ff88;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(0, 255, 136, 0.3);
             display: flex;
-            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title::before {
+            content: "";
+            width: 4px;
+            height: 20px;
+            background: #00ff88;
+            border-radius: 2px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
             gap: 20px;
         }
 
         .form-group {
-            position: relative;
+            margin-bottom: 20px;
         }
 
-        input {
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            display: block;
+            color: #aaa;
+            font-size: 13px;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        input, select, textarea {
             width: 100%;
-            padding: 15px 20px;
+            padding: 14px 18px;
             border: 2px solid rgba(255, 255, 255, 0.1);
             border-radius: 10px;
             background: rgba(255, 255, 255, 0.05);
             color: #fff;
-            font-size: 15px;
+            font-size: 14px;
             font-family: 'Poppins', sans-serif;
             transition: all 0.3s ease;
         }
 
-        input::placeholder {
-            color: #888;
+        input::placeholder, textarea::placeholder {
+            color: #666;
         }
 
-        input:focus {
+        input:focus, select:focus, textarea:focus {
             outline: none;
-            border-color: #00d4ff;
+            border-color: #00ff88;
             background: rgba(255, 255, 255, 0.1);
-            box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.2);
+        }
+
+        select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23aaa' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+        }
+
+        select option {
+            background: #1a1a2e;
+            color: #fff;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+        }
+
+        .file-input-wrapper input[type="file"] {
+            padding: 12px;
+        }
+
+        .file-input-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #aaa;
+            font-size: 13px;
+        }
+
+        .file-input-label svg {
+            width: 20px;
+            height: 20px;
+            fill: #00ff88;
+        }
+
+        .credentials-section {
+            background: rgba(0, 212, 255, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 20px;
+            border: 1px solid rgba(0, 212, 255, 0.3);
+        }
+
+        .credentials-section .section-title {
+            color: #00d4ff;
+            border-bottom-color: rgba(0, 212, 255, 0.3);
+        }
+
+        .credentials-section .section-title::before {
+            background: #00d4ff;
         }
 
         button {
-            padding: 15px;
+            width: 100%;
+            padding: 18px;
             border: none;
-            border-radius: 10px;
-            background: linear-gradient(135deg, #00d4ff, #0099cc);
-            color: #fff;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #00ff88, #00cc6a);
+            color: #0f0c29;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
             font-family: 'Poppins', sans-serif;
-            margin-top: 10px;
+            margin-top: 20px;
         }
 
         button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.4);
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(0, 255, 136, 0.4);
         }
 
-        .links {
+        .back-link {
             text-align: center;
             margin-top: 25px;
-            color: #aaa;
-            font-size: 14px;
         }
 
-        .links a {
-            color: #00d4ff;
+        .back-link a {
+            color: #aaa;
             text-decoration: none;
-            font-weight: 500;
+            font-size: 14px;
             transition: all 0.3s ease;
         }
 
-        .links a:hover {
+        .back-link a:hover {
             color: #00ff88;
         }
 
@@ -159,41 +240,42 @@
         }
 
         .back-home a:hover {
-            background: rgba(0, 212, 255, 0.2);
-            color: #00d4ff;
+            background: rgba(0, 255, 136, 0.2);
+            color: #00ff88;
         }
 
-        .features-list {
-            margin-top: 20px;
-            padding: 15px;
-            background: rgba(0, 255, 136, 0.1);
+        .info-box {
+            background: rgba(255, 200, 0, 0.1);
+            border: 1px solid rgba(255, 200, 0, 0.3);
             border-radius: 10px;
-            border: 1px solid rgba(0, 255, 136, 0.3);
+            padding: 15px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
 
-        .features-list h4 {
-            color: #00ff88;
-            margin-bottom: 10px;
-            font-size: 14px;
+        .info-box svg {
+            width: 24px;
+            height: 24px;
+            fill: #ffc800;
+            flex-shrink: 0;
         }
 
-        .features-list ul {
-            list-style: none;
-            color: #aaa;
+        .info-box p {
+            color: #ffc800;
             font-size: 13px;
+            line-height: 1.5;
         }
 
-        .features-list li {
-            margin: 5px 0;
-            padding-left: 20px;
-            position: relative;
-        }
-
-        .features-list li::before {
-            content: "✓";
-            position: absolute;
-            left: 0;
-            color: #00ff88;
+        @media (max-width: 600px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                padding: 25px;
+            }
         }
     </style>
 </head>
@@ -208,40 +290,138 @@
         <a href="/">🔗 CertiVault</a>
     </div>
     
-    <h2>Institution Registration</h2>
-    <p class="subtitle">Create your institution account to start issuing certificates</p>
+    <h2>Institute Registration</h2>
+    <p class="subtitle">Register your institution to issue certificates</p>
 
-    {% if error %}
-    <div class="error">{{ error }}</div>
-    {% endif %}
+    <div class="info-box">
+        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+        <p>All fields marked with * are required. Your registration will be reviewed by our team before approval.</p>
+    </div>
 
-    <form method="POST">
+    <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
-        <div class="form-group">
-            <input type="text" name="username" placeholder="Institution Username" required>
+        
+        <!-- Institute Information -->
+        <div class="form-section">
+            <h3 class="section-title">Institute Information</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Institute Name *</label>
+                    <input type="text" name="institute_name" placeholder="Enter institute name" required>
+                </div>
+                <div class="form-group">
+                    <label>Institute Code *</label>
+                    <input type="text" name="institute_code" placeholder="Enter unique institute code" required>
+                </div>
+                <div class="form-group">
+                    <label>Affiliation *</label>
+                    <input type="text" name="affiliation" placeholder="e.g., University, Board, Council" required>
+                </div>
+                <div class="form-group">
+                    <label>Type *</label>
+                    <select name="type" required>
+                        <option value="">Select Institute Type</option>
+                        <option value="university">University</option>
+                        <option value="college">College</option>
+                        <option value="school">School</option>
+                        <option value="training_center">Training Center</option>
+                        <option value="online_platform">Online Platform</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Established Year *</label>
+                    <input type="number" name="established_year" placeholder="e.g., 1990" min="1800" max="2024" required>
+                </div>
+                <div class="form-group">
+                    <label>Government Registration No. *</label>
+                    <input type="text" name="govt_reg_no" placeholder="Enter registration number" required>
+                </div>
+                <div class="form-group">
+                    <label>Accreditation</label>
+                    <input type="text" name="accreditation" placeholder="e.g., NAAC, NBA, ISO">
+                </div>
+            </div>
         </div>
-        <div class="form-group">
-            <input type="email" name="email" placeholder="Institution Email" required>
+
+        <!-- Contact Information -->
+        <div class="form-section">
+            <h3 class="section-title">Contact Information</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Email Address *</label>
+                    <input type="email" name="email" placeholder="institute@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label>Phone Number *</label>
+                    <input type="text" name="phone" placeholder="+91XXXXXXXXXX" required>
+                </div>
+                <div class="form-group">
+                    <label>Website</label>
+                    <input type="url" name="website" placeholder="https://www.institute.com">
+                </div>
+                <div class="form-group full-width">
+                    <label>Address *</label>
+                    <textarea name="address" placeholder="Enter complete address" required></textarea>
+                </div>
+            </div>
         </div>
-        <div class="form-group">
-            <input type="password" name="password" placeholder="Password" required>
+
+        <!-- Admin Information -->
+        <div class="form-section">
+            <h3 class="section-title">Administrator Details</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Admin Name *</label>
+                    <input type="text" name="admin_name" placeholder="Full name of administrator" required>
+                </div>
+                <div class="form-group">
+                    <label>Designation *</label>
+                    <input type="text" name="designation" placeholder="e.g., Director, Principal, Head" required>
+                </div>
+            </div>
         </div>
-        <button type="submit">Register Institution</button>
+
+        <!-- Login Credentials -->
+        <div class="credentials-section">
+            <h3 class="section-title">Login Credentials</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Username *</label>
+                    <input type="text" name="username" placeholder="Choose a username" required>
+                </div>
+                <div class="form-group">
+                    <label>Password *</label>
+                    <input type="password" name="password" placeholder="Create a password" required>
+                </div>
+            </div>
+        </div>
+
+        <!-- Documents -->
+        <div class="form-section">
+            <h3 class="section-title">Authorization Documents</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Authorization Letter *</label>
+                    <div class="file-input-wrapper">
+                        <input type="file" name="authorization_file" accept=".pdf,.doc,.docx" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Institute Logo</label>
+                    <div class="file-input-wrapper">
+                        <input type="file" name="logo" accept="image/*">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button type="submit">Submit Registration</button>
+
+        <div class="back-link">
+            <p>Already registered? <a href="{% url 'institution_login' %}">Login here</a></p>
+        </div>
     </form>
-
-    <div class="features-list">
-        <h4>Why Register as Institution?</h4>
-        <ul>
-            <li>Issue blockchain-verified certificates</li>
-            <li>AI-powered authenticity detection</li>
-            <li>Instant certificate verification</li>
-            <li>Complete certificate management</li>
-        </ul>
-    </div>
-
-    <div class="links">
-        <p>Already Registered? <a href="{% url 'institution_login' %}">Login here</a></p>
-    </div>
 </div>
 
 </body>

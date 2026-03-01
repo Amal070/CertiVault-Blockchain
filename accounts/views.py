@@ -1,36 +1,70 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from .models import CustomUser
+from institute.models import Institute
 
 
 # ==========================
 # INSTITUTION REGISTER
 # ==========================
-def institution_register(request):
+def institute_register(request):
 
     if request.method == "POST":
+
         username = request.POST.get("username")
-        email = request.POST.get("email")
         password = request.POST.get("password")
 
-        if CustomUser.objects.filter(username=username).exists():
-            return render(request, "accounts/institution_register.html", {
-                "error": "Username already exists"
-            })
+        institute_name = request.POST.get("institute_name")
+        institute_code = request.POST.get("institute_code")
+        affiliation = request.POST.get("affiliation")
+        type_inst = request.POST.get("type")
+        established_year = request.POST.get("established_year")
+        email = request.POST.get("email")
+        phone = request.POST.get("phone")
+        website = request.POST.get("website")
+        address = request.POST.get("address")
+        admin_name = request.POST.get("admin_name")
+        designation = request.POST.get("designation")
+        govt_reg_no = request.POST.get("govt_reg_no")
+        accreditation = request.POST.get("accreditation")
 
+        if CustomUser.objects.filter(username=username).exists():
+            messages.error(request, "Username already exists")
+            return redirect("institute_register")
+
+        # Create login account
         user = CustomUser.objects.create_user(
             username=username,
-            email=email,
             password=password,
             user_type="institution"
         )
 
-        login(request, user)
-        return redirect("institution_dashboard")
+        # Create institute profile
+        Institute.objects.create(
+            user=user,
+            institute_name=institute_name,
+            institute_code=institute_code,
+            affiliation=affiliation,
+            type=type_inst,
+            established_year=established_year,
+            email=email,
+            phone=phone,
+            website=website,
+            address=address,
+            admin_name=admin_name,
+            designation=designation,
+            govt_reg_no=govt_reg_no,
+            accreditation=accreditation,
+            authorization_file=request.FILES.get("authorization_file"),
+            logo=request.FILES.get("logo"),
+        )
+
+        messages.success(request, "Registration submitted. Wait for approval.")
+        return redirect("login")
 
     return render(request, "accounts/institution_register.html")
-
 
 # ==========================
 # INSTITUTION LOGIN
