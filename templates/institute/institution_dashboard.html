@@ -367,15 +367,15 @@
 
     <div class="stats-grid">
         <div class="stat-card">
-            <div class="stat-number">0</div>
+            <div class="stat-number">{{ total_issued }}</div>
             <div class="stat-label">Total Certificates Issued</div>
         </div>
         <div class="stat-card">
-            <div class="stat-number">0</div>
+            <div class="stat-number">{{ pending }}</div>
             <div class="stat-label">Pending Verifications</div>
         </div>
         <div class="stat-card">
-            <div class="stat-number">0</div>
+            <div class="stat-number">{{ verified }}</div>
             <div class="stat-label">Total Verifications</div>
         </div>
     </div>
@@ -405,29 +405,26 @@
 
     <div class="issue-section" id="issue">
         <h2>🎓 Issue New Certificate</h2>
+
+        {% if messages %}
+          {% for message in messages %}
+            <div class="message {{ message.tags }}">{{ message }}</div>
+          {% endfor %}
+        {% endif %}
+
+        {% if last_tx_hash %}
+          <div class="tx-info">
+            <strong>Blockchain TX Hash:</strong> {{ last_tx_hash }}
+          </div>
+        {% endif %}
+
         <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
-            <div class="form-group">
-                <label>Student Name</label>
-                <input type="text" name="student_name" placeholder="Enter student full name" required>
-            </div>
-            <div class="form-group">
-                <label>Course Name</label>
-                <input type="text" name="course_name" placeholder="Enter course name" required>
-            </div>
-            <div class="form-group">
-                <label>Certificate File</label>
-                <div class="upload-area">
-                    <div class="upload-icon">📁</div>
-                    <p>Drag and drop certificate file</p>
-                    <p>or <span>browse</span></p>
-                    <input type="file" name="certificate_file" accept=".pdf,.jpg,.jpeg,.png" style="display: none;">
-                </div>
-            </div>
+            {{ form.as_p }}
             <button type="submit">Issue Certificate</button>
         </form>
 
-        <div class="features">
+        {% comment %} <div class="features">
             <div class="feature">
                 <div class="feature-icon">🤖</div>
                 <p>AI Authenticity Detection</p>
@@ -440,7 +437,7 @@
                 <div class="feature-icon">⚡</div>
                 <p>Instant Issuance</p>
             </div>
-        </div>
+        </div> {% endcomment %}
     </div>
 </div>
 

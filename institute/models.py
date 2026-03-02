@@ -93,3 +93,35 @@ class Certificate(models.Model):
 
     def __str__(self):
         return self.certificate_id
+
+
+class InstituteCertificate(models.Model):
+
+    institute = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='institute_certificates'
+    )
+
+    student_name = models.CharField(max_length=200)
+    register_number = models.CharField(max_length=100, null=True, blank=True)
+
+    student_email = models.EmailField(null=True, blank=True)
+
+    course = models.CharField(max_length=200)
+    year_of_passing = models.IntegerField(null=True, blank=True)
+
+    certificate_file = models.FileField(upload_to='institute_certificates/')
+
+    certificate_hash = models.CharField(max_length=64, unique=True)
+
+    blockchain_tx_hash = models.CharField(
+        max_length=256,
+        null=True,
+        blank=True
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.institute.username} - {self.student_name} ({self.certificate_hash})"

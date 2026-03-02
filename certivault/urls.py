@@ -6,6 +6,6 @@ urlpatterns = [
     path('', home, name='home'),
     path('admin/', admin.site.urls),
     path('accounts/', include('accounts.urls')),
-    # path('institute/', include('institute.urls')),
+    path('institute/', include('institute.urls')),
     # path('user/', include('users.urls')),
 ]
