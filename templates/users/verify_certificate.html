@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Certificate - CertiVault</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --success: #10b981;
+            --success-bg: #d1fae5;
+            --error: #ef4444;
+            --error-bg: #fee2e2;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --white: #ffffff;
+            --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+            --radius: 12px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background-color: var(--gray-50);
+            min-height: 100vh;
+            color: var(--gray-700);
+            line-height: 1.6;
+        }
+
+        .header {
+            background: var(--white);
+            border-bottom: 1px solid var(--gray-200);
+            padding: 16px 24px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 20px;
+            color: var(--primary);
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+        }
+
+        .header-nav {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 14px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--gray-300);
+            color: var(--gray-700);
+        }
+
+        .btn-outline:hover {
+            background: var(--gray-100);
+            border-color: var(--gray-400);
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 6px 12px;
+            background: var(--gray-100);
+            border-radius: 8px;
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .user-name {
+            font-weight: 500;
+            font-size: 14px;
+            color: var(--gray-700);
+        }
+
+        .main {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        .page-title {
+            text-align: center;
+            margin-bottom: 8px;
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--gray-800);
+        }
+
+        .page-subtitle {
+            text-align: center;
+            color: var(--gray-500);
+            margin-bottom: 32px;
+            font-size: 15px;
+        }
+
+        .card {
+            background: var(--white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 32px;
+            margin-bottom: 24px;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--gray-100);
+        }
+
+        .card-icon {
+            width: 44px;
+            height: 44px;
+            background: var(--gray-100);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-size: 20px;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--gray-800);
+        }
+
+        .card-desc {
+            font-size: 14px;
+            color: var(--gray-500);
+        }
+
+        .upload-container { margin-bottom: 24px; }
+
+        .upload-area {
+            border: 2px dashed var(--gray-300);
+            border-radius: var(--radius);
+            padding: 48px 24px;
+            text-align: center;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            background: var(--gray-50);
+        }
+
+        .upload-area:hover {
+            border-color: var(--primary);
+            background: #eff6ff;
+        }
+
+        .upload-area.dragover {
+            border-color: var(--primary);
+            background: #eff6ff;
+            transform: scale(1.01);
+        }
+
+        .upload-icon {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            font-size: 28px;
+            color: var(--primary);
+        }
+
+        .upload-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--gray-700);
+            margin-bottom: 8px;
+        }
+
+        .upload-subtitle {
+            font-size: 14px;
+            color: var(--gray-500);
+            margin-bottom: 16px;
+        }
+
+        .upload-formats {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .format-badge {
+            padding: 4px 12px;
+            background: var(--gray-200);
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--gray-600);
+        }
+
+        .file-input { display: none; }
+
+        .selected-file {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 16px;
+            background: #ecfdf5;
+            border: 1px solid #a7f3d0;
+            border-radius: 8px;
+            margin-top: 16px;
+        }
+
+        .selected-file.active { display: flex; }
+
+        .file-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--success);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .file-info { flex: 1; text-align: left; }
+
+        .file-name {
+            font-weight: 600;
+            color: var(--gray-800);
+            font-size: 14px;
+        }
+
+        .file-size {
+            font-size: 12px;
+            color: var(--gray-500);
+        }
+
+        .remove-file {
+            width: 32px;
+            height: 32px;
+            background: transparent;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            color: var(--gray-400);
+            transition: all 0.2s;
+        }
+
+        .remove-file:hover {
+            background: var(--error-bg);
+            color: var(--error);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 16px 24px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .submit-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .loading-container {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .loading-container.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .spinner {
+            width: 64px;
+            height: 64px;
+            border: 4px solid var(--gray-200);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .loading-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--gray-800);
+            margin-bottom: 8px;
+        }
+
+        .loading-text {
+            color: var(--gray-500);
+            font-size: 14px;
+        }
+
+        .progress-steps {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 24px;
+        }
+
+        .progress-step {
+            padding: 8px 16px;
+            background: var(--gray-100);
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--gray-500);
+            transition: all 0.3s ease;
+        }
+
+        .progress-step.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .progress-step.completed {
+            background: var(--success-bg);
+            color: var(--success);
+        }
+
+        .result-container { display: none; }
+
+        .result-container.active {
+            display: block;
+            animation: slideUp 0.4s ease;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-card {
+            border-radius: var(--radius);
+            padding: 32px;
+            text-align: center;
+        }
+
+        .result-card.valid {
+            background: var(--success-bg);
+            border: 2px solid var(--success);
+        }
+
+        .result-card.invalid {
+            background: var(--error-bg);
+            border: 2px solid var(--error);
+        }
+
+        .result-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 36px;
+        }
+
+        .result-card.valid .result-icon {
+            background: var(--success);
+            color: white;
+        }
+
+        .result-card.invalid .result-icon {
+            background: var(--error);
+            color: white;
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-5px); }
+            40%, 80% { transform: translateX(5px); }
+        }
+
+        .result-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .result-card.valid .result-title { color: var(--success); }
+        .result-card.invalid .result-title { color: var(--error); }
+
+        .result-message {
+            color: var(--gray-600);
+            margin-bottom: 24px;
+        }
+
+        .details-table {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            text-align: left;
+        }
+
+        .detail-row {
+            display: flex;
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--gray-100);
+        }
+
+        .detail-row:last-child { border-bottom: none; }
+
+        .detail-label {
+            width: 140px;
+            font-weight: 500;
+            color: var(--gray-500);
+            font-size: 13px;
+        }
+
+        .detail-value {
+            flex: 1;
+            color: var(--gray-800);
+            font-size: 14px;
+            font-weight: 500;
+            word-break: break-all;
+        }
+
+        .result-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .result-actions .btn { flex: 1; justify-content: center; }
+
+        .info-section {
+            background: var(--white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 32px;
+        }
+
+        .info-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--gray-800);
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+
+        .step-item {
+            text-align: center;
+            padding: 20px 12px;
+            background: var(--gray-50);
+            border-radius: 8px;
+        }
+
+        .step-number {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 14px;
+            margin: 0 auto 12px;
+        }
+
+        .step-title {
+            font-weight: 600;
+            color: var(--gray-700);
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .step-desc {
+            font-size: 12px;
+            color: var(--gray-500);
+        }
+
+        .footer {
+            text-align: center;
+            padding: 24px;
+            color: var(--gray-400);
+            font-size: 13px;
+        }
+
+        @media (max-width: 768px) {
+            .header-content { flex-direction: column; gap: 12px; }
+            .header-nav { width: 100%; justify-content: center; flex-wrap: wrap; }
+            .steps-grid { grid-template-columns: repeat(2, 1fr); }
+            .result-actions { flex-direction: column; }
+            .detail-row { flex-direction: column; gap: 4px; }
+            .detail-label { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <div class="header-content">
+            <a href="{% url 'user_dashboard' %}" class="logo">
+                <div class="logo-icon"><i class="fas fa-link"></i></div>
+                CertiVault
+            </a>
+            <nav class="header-nav">
+                <a href="{% url 'user_dashboard' %}" class="btn btn-outline">
+                    <i class="fas fa-arrow-left"></i> Dashboard
+                </a>
+                <div class="user-menu">
+                    <div class="user-avatar">{{ request.user.username|make_list|first|upper }}</div>
+                    <span class="user-name">{{ request.user.username }}</span>
+                </div>
+                <a href="{% url 'logout' %}" class="btn btn-outline">
+                    <i class="fas fa-sign-out-alt"></i>
+                </a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main">
+        <h1 class="page-title">Verify Certificate</h1>
+        <p class="page-subtitle">Upload a certificate to verify its authenticity using blockchain technology</p>
+
+        <div class="card" id="upload-card">
+            <div class="card-header" id="card-header">
+                <div class="card-icon"><i class="fas fa-file-upload"></i></div>
+                <div>
+                    <h2 class="card-title">Upload Certificate</h2>
+                    <p class="card-desc">Drag and drop or browse to select your certificate file</p>
+                </div>
+            </div>
+
+            <form method="POST" enctype="multipart/form-data" id="verify-form">
+                {% csrf_token %}
+                <div class="upload-container" id="upload-container">
+                    <div class="upload-area" id="upload-area">
+                        <div class="upload-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+                        <h3 class="upload-title">Drop your certificate here</h3>
+                        <p class="upload-subtitle">or click to browse from your computer</p>
+                        <div class="upload-formats">
+                            <span class="format-badge">PDF</span>
+                        </div>
+                        <input type="file" name="certificate" id="certificate-input" class="file-input" accept=".pdf,.jpg,.jpeg,.png">
+                    </div>
+                    <div class="selected-file" id="selected-file">
+                        <div class="file-icon"><i class="fas fa-file-pdf"></i></div>
+                        <div class="file-info">
+                            <div class="file-name" id="file-name">certificate.pdf</div>
+                            <div class="file-size" id="file-size">125 KB</div>
+                        </div>
+                        <button type="button" class="remove-file" id="remove-file"><i class="fas fa-times"></i></button>
+                    </div>
+                </div>
+                <button type="submit" class="submit-btn" id="submit-btn" disabled>
+                    <i class="fas fa-shield-alt"></i> Verify Certificate
+                </button>
+            </form>
+        </div>
+
+        <div class="loading-container" id="loading">
+            <div class="spinner"></div>
+            <h3 class="loading-title">Verifying Certificate...</h3>
+            <p class="loading-text">Please wait while we check the blockchain</p>
+            <div class="progress-steps">
+                <span class="progress-step active" id="step1">Upload</span>
+                <span class="progress-step" id="step2">Hash</span>
+                <span class="progress-step" id="step3">Search</span>
+                <span class="progress-step" id="step4">Verify</span>
+            </div>
+        </div>
+
+        <div class="result-container" id="result">
+            {% if result %}
+            <div class="result-card {% if result == 'VALID' %}valid{% else %}invalid{% endif %}">
+                <div class="result-icon">
+                    {% if result == 'VALID' %}<i class="fas fa-check"></i>{% else %}<i class="fas fa-times"></i>{% endif %}
+                </div>
+                
+                {% if result == 'VALID' %}
+                    <h2 class="result-title">Certificate is Valid</h2>
+                    <p class="result-message">This certificate is verified and authentic on the blockchain.</p>
+                    {% if certificate %}
+                    <div class="details-table">
+                        <div class="detail-row"><span class="detail-label">Student Name</span><span class="detail-value">{{ certificate.student_name }}</span></div>
+                        <div class="detail-row"><span class="detail-label">Register Number</span><span class="detail-value">{{ certificate.register_number|default:"N/A" }}</span></div>
+                        <div class="detail-row"><span class="detail-label">Course</span><span class="detail-value">{{ certificate.course }}</span></div>
+                        <div class="detail-row"><span class="detail-label">Year of Passing</span><span class="detail-value">{{ certificate.year_of_passing|default:"N/A" }}</span></div>
+                        <div class="detail-row"><span class="detail-label">Issued By</span><span class="detail-value">{{ certificate.issued_by.username }}</span></div>
+                        <div class="detail-row"><span class="detail-label">Issue Date</span><span class="detail-value">{{ certificate.issue_date }}</span></div>
+                        <div class="detail-row"><span class="detail-label">Certificate ID</span><span class="detail-value">{{ certificate.certificate_id }}</span></div>
+                    </div>
+                    {% endif %}
+                {% elif result == 'INVALID' %}
+                    <h2 class="result-title">Certificate is Invalid</h2>
+                    <p class="result-message">This certificate does not match any records on the blockchain. It may be counterfeit or altered.</p>
+                {% else %}
+                    <h2 class="result-title">Verification Error</h2>
+                    <p class="result-message">{{ result }}</p>
+                {% endif %}
+
+                <div class="result-actions">
+                    <a href="{% url 'verify_certificate' %}" class="btn btn-primary"><i class="fas fa-redo"></i> Verify Another</a>
+                    <a href="{% url 'user_dashboard' %}" class="btn btn-outline"><i class="fas fa-home"></i> Go to Dashboard</a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="info-section">
+            <h2 class="info-title">How Certificate Verification Works</h2>
+            <div class="steps-grid">
+                <div class="step-item"><div class="step-number">1</div><h4 class="step-title">Upload</h4><p class="step-desc">Select your certificate file</p></div>
+                <div class="step-item"><div class="step-number">2</div><h4 class="step-title">Hash</h4><p class="step-desc">Generate unique fingerprint</p></div>
+                <div class="step-item"><div class="step-number">3</div><h4 class="step-title">Search</h4><p class="step-desc">Check blockchain records</p></div>
+                <div class="step-item"><div class="step-number">4</div><h4 class="step-title">Result</h4><p class="step-desc">Get verification status</p></div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2026 CertiVault - Secure Blockchain Certificate Verification</p>
+    </footer>
+
+    <script>
+        const uploadArea = document.getElementById('upload-area');
+        const certificateInput = document.getElementById('certificate-input');
+        const selectedFile = document.getElementById('selected-file');
+        const fileName = document.getElementById('file-name');
+        const fileSize = document.getElementById('file-size');
+        const removeFile = document.getElementById('remove-file');
+        const submitBtn = document.getElementById('submit-btn');
+        const verifyForm = document.getElementById('verify-form');
+        const uploadContainer = document.getElementById('upload-container');
+        const cardHeader = document.getElementById('card-header');
+        const uploadCard = document.getElementById('upload-card');
+        const loading = document.getElementById('loading');
+        const result = document.getElementById('result');
+
+        // Click to upload
+        uploadArea.addEventListener('click', () => certificateInput.click());
+
+        // File selected
+        certificateInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                const file = e.target.files[0];
+                fileName.textContent = file.name;
+                fileSize.textContent = formatFileSize(file.size);
+                selectedFile.classList.add('active');
+                submitBtn.disabled = false;
+            }
+        });
+
+        // Remove file
+        removeFile.addEventListener('click', () => {
+            certificateInput.value = '';
+            selectedFile.classList.remove('active');
+            submitBtn.disabled = true;
+        });
+
+        // Drag and drop
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            
+            if (e.dataTransfer.files.length > 0) {
+                certificateInput.files = e.dataTransfer.files;
+                const file = e.dataTransfer.files[0];
+                fileName.textContent = file.name;
+                fileSize.textContent = formatFileSize(file.size);
+                selectedFile.classList.add('active');
+                submitBtn.disabled = false;
+            }
+        });
+
+        // Form submission - hide upload and show loading, then result
+        verifyForm.addEventListener('submit', (e) => {
+            // Hide upload section
+            uploadContainer.style.display = 'none';
+            cardHeader.style.display = 'none';
+            // Show loading
+            loading.classList.add('active');
+            submitBtn.disabled = true;
+            // Animate progress steps
+            animateSteps();
+        });
+
+        // Check for existing result on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            {% if result %}
+                // Hide upload section and show result
+                uploadContainer.style.display = 'none';
+                cardHeader.style.display = 'none';
+                result.classList.add('active');
+            {% endif %}
+        });
+
+        function animateSteps() {
+            const steps = ['step1', 'step2', 'step3', 'step4'];
+            let currentStep = 0;
+
+            const interval = setInterval(() => {
+                if (currentStep > 0) {
+                    document.getElementById(steps[currentStep - 1]).classList.remove('active');
+                    document.getElementById(steps[currentStep - 1]).classList.add('completed');
+                }
+                
+                if (currentStep < steps.length) {
+                    document.getElementById(steps[currentStep]).classList.add('active');
+                }
+                
+                currentStep++;
+                
+                if (currentStep >= steps.length) {
+                    clearInterval(interval);
+                    
+                    // After animation, hide loading and show result
+                    setTimeout(() => {
+                        loading.classList.remove('active');
+                        result.classList.add('active');
+                    }, 500);
+                }
+            }, 800);
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+    </script>
+
+</body>
+</html>

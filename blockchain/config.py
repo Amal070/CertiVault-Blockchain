@@ -1,8 +1,11 @@
-# Ganache RPC URL
+# -----------------------------
+# Blockchain Configuration
+# -----------------------------
+
 GANACHE_RPC = "http://127.0.0.1:7545"
 
-# Click 🔑 icon in Ganache to copy private key
-PRIVATE_KEY = "0x3db4b3ec616a5d783185fda551371b653d8445b19966bf83fbceda9ad2da223a"
+# Copy from Ganache → ACCOUNTS → 🔑 icon
+PRIVATE_KEY = "0x200bb6fc82677b032de5e7aa25951a5002102f8f0a49ad1103b04f5506d503a1"
 
-# After deploying contract, paste address here
-CONTRACT_ADDRESS = "0xD0b57B137979E6B35c5E98C96B2Bf98a6C9a2816"
+# Leave this empty before deployment
+CONTRACT_ADDRESS = "0xa9d06e92bbA79956cC54450583e4028c3EdD58F8"

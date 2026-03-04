@@ -1,21 +1,23 @@
-# TODO List - PHASE 1
+# TODO: Fix Blockchain Connection Error
 
-## Completed Tasks:
-- [x] Improve home page design
-- [x] Style institution register template
-- [x] Style institution login template
-- [x] Add user registration view and URL
-- [x] Add user login view and URL
-- [x] Add user dashboard view and URL
-- [x] Create user_register.html template
-- [x] Create user_login.html template
-- [x] Create user_dashboard.html template
-- [x] Update institution_dashboard.html with modern design
+## Problem
+The blockchain connection check in `blockchain/utils.py` runs at import time, causing Django to fail to start when Ganache is not running.
 
-## Status: Completed
+## Solution
+Make the blockchain connection lazy - only connect when the function is actually called, not at import time.
 
-## To run the project:
-1. Delete existing db.sqlite3 (if migration issues)
-2. Run: python manage.py migrate
-3. Run: python manage.py runserver
-4. Visit: http://localhost:8000/
+## Tasks Completed
+- [x] Modify `blockchain/utils.py` to make blockchain connection lazy
+  - Remove module-level connection check
+  - Add helper function to get web3 connection
+  - Update functions to check connection before executing
+
+## Additional Fixes
+- [x] Fixed user dashboard certificate upload
+  - Added JavaScript to make upload area clickable in `templates/users/user_dashboard.html`
+  - Updated `accounts/views.py` to include certificate verification logic in user_dashboard view
+- [x] Added better error handling for blockchain connection errors
+  - Shows friendly message when Ganache is not running: "⚠️ Blockchain not connected. Please start Ganache to verify certificates."
+
+## Important Note
+To verify certificates, Ganache must be running on port 7545. The application will work without Ganache, but certificate verification will show a friendly error message.

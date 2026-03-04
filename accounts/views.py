@@ -230,7 +230,60 @@ def user_dashboard(request):
     if request.user.user_type != "user":
         return redirect("user_login")
 
-    return render(request, "users/user_dashboard.html")
+    # Import blockchain functions here to avoid import errors
+    from blockchain.utils import verify_hash_from_blockchain
+    from institute.models import Certificate
+    from users.models import VerificationHistory
+    import hashlib
+
+    result = None
+    certificate_data = None
+
+    if request.method == "POST":
+
+        certificate_file = request.FILES.get("certificate")
+
+        if certificate_file:
+
+            # Generate SHA256 hash
+            file_data = certificate_file.read()
+            hash_value = hashlib.sha256(file_data).hexdigest()
+            certificate_file.seek(0)
+
+            try:
+                # Verify from blockchain
+                is_valid = verify_hash_from_blockchain(hash_value)
+
+                if is_valid:
+                    result = "VALID"
+
+                    # Fetch certificate details
+                    certificate_data = Certificate.objects.filter(
+                        certificate_hash=hash_value
+                    ).first()
+
+                else:
+                    result = "INVALID"
+
+                # Save verification history
+                VerificationHistory.objects.create(
+                    user=request.user,
+                    certificate_id=hash_value,
+                    result=result
+                )
+
+            except Exception as e:
+                error_msg = str(e)
+                # Check if it's a connection error
+                if "connection" in error_msg.lower() or "refused" in error_msg.lower():
+                    result = "⚠️ Blockchain not connected. Please start Ganache to verify certificates."
+                else:
+                    result = f"Blockchain Error: {error_msg}"
+
+    return render(request, "users/user_dashboard.html", {
+        "result": result,
+        "certificate": certificate_data
+    })
 
 
 # ==========================

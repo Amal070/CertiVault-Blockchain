@@ -14,9 +14,9 @@
 
         body {
             font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            background-color: #f5f7fa;
             min-height: 100vh;
-            color: #fff;
+            color: #333;
         }
 
         /* Navigation */
@@ -24,57 +24,59 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 20px 50px;
-            background: rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(10px);
+            padding: 15px 50px;
+            background: #ffffff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
 
         .logo {
-            font-size: 28px;
+            font-size: 24px;
             font-weight: 700;
-            color: #00ff88;
+            color: #007bff;
             text-decoration: none;
         }
 
         .logo span {
-            color: #fff;
+            color: #333;
         }
 
         .nav-links {
             display: flex;
-            gap: 20px;
+            gap: 15px;
             align-items: center;
         }
 
         .nav-links a {
-            color: #fff;
+            color: #333;
             text-decoration: none;
-            padding: 10px 20px;
-            border-radius: 25px;
+            padding: 8px 20px;
+            border-radius: 20px;
             transition: all 0.3s ease;
+            font-weight: 500;
         }
 
         .nav-links a:hover {
-            background: rgba(0, 255, 136, 0.2);
-            color: #00ff88;
+            background: #007bff;
+            color: #fff;
         }
 
         .user-info {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 10px;
         }
 
         .user-avatar {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, #00ff88, #00cc6a);
+            width: 35px;
+            height: 35px;
+            background: linear-gradient(135deg, #007bff, #0056b3);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #0f0c29;
-            font-weight: 700;
+            color: #fff;
+            font-weight: 600;
+            font-size: 14px;
         }
 
         /* Main Content */
@@ -87,20 +89,51 @@
         .welcome-section {
             text-align: center;
             margin-bottom: 50px;
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 123, 255, 0.1);
         }
 
         .welcome-section h1 {
-            font-size: 42px;
-            margin-bottom: 15px;
-            background: linear-gradient(135deg, #00ff88, #00d4ff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            font-size: 36px;
+            margin-bottom: 10px;
+            color: #007bff;
         }
 
         .welcome-section p {
-            color: #aaa;
-            font-size: 18px;
+            color: #666;
+            font-size: 16px;
+        }
+
+        /* Stats Row */
+        .stats-row {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            background: #ffffff;
+            padding: 20px 40px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 123, 255, 0.1);
+            border: 1px solid #e3f2fd;
+        }
+
+        .stat-item .stat-number {
+            font-size: 32px;
+            font-weight: 700;
+            color: #007bff;
+        }
+
+        .stat-item .stat-label {
+            color: #666;
+            font-size: 14px;
+            margin-top: 5px;
         }
 
         /* Cards Grid */
@@ -108,22 +141,21 @@
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 30px;
-            margin-bottom: 50px;
         }
 
         .card {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(20px);
-            border-radius: 20px;
+            background: #ffffff;
+            border-radius: 15px;
             padding: 30px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid #e3f2fd;
             transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 123, 255, 0.08);
         }
 
         .card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-            border-color: #00ff88;
+            box-shadow: 0 10px 30px rgba(0, 123, 255, 0.15);
+            border-color: #007bff;
         }
 
         .card-icon {
@@ -132,13 +164,13 @@
         }
 
         .card h3 {
-            font-size: 24px;
+            font-size: 22px;
             margin-bottom: 15px;
-            color: #00ff88;
+            color: #0056b3;
         }
 
         .card p {
-            color: #aaa;
+            color: #666;
             line-height: 1.6;
             margin-bottom: 20px;
         }
@@ -146,8 +178,8 @@
         .card-btn {
             display: inline-block;
             padding: 12px 25px;
-            background: linear-gradient(135deg, #00ff88, #00cc6a);
-            color: #0f0c29;
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: #ffffff;
             text-decoration: none;
             border-radius: 25px;
             font-weight: 600;
@@ -156,98 +188,47 @@
 
         .card-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(0, 255, 136, 0.4);
+            box-shadow: 0 8px 25px rgba(0, 123, 255, 0.4);
         }
 
-        /* Upload Section */
-        .upload-section {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(20px);
-            border-radius: 20px;
+        /* Features Section */
+        .features-section {
+            margin-top: 50px;
+            background: #ffffff;
             padding: 40px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            max-width: 600px;
-            margin: 0 auto;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 123, 255, 0.1);
         }
 
-        .upload-section h2 {
+        .features-section h2 {
             text-align: center;
             margin-bottom: 30px;
-            color: #00ff88;
+            color: #0056b3;
         }
 
-        .upload-area {
-            border: 2px dashed rgba(0, 255, 136, 0.5);
-            border-radius: 15px;
-            padding: 40px;
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+        }
+
+        .feature-item {
             text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-bottom: 20px;
+            padding: 20px;
         }
 
-        .upload-area:hover {
-            border-color: #00ff88;
-            background: rgba(0, 255, 136, 0.1);
-        }
-
-        .upload-icon {
-            font-size: 60px;
+        .feature-icon {
+            font-size: 40px;
             margin-bottom: 15px;
         }
 
-        .upload-area p {
-            color: #aaa;
+        .feature-item h4 {
+            color: #007bff;
             margin-bottom: 10px;
         }
 
-        .upload-area span {
-            color: #00ff88;
-            font-weight: 600;
-        }
-
-        /* How It Works */
-        .how-it-works {
-            margin-top: 50px;
-            padding: 30px;
-            background: rgba(0, 212, 255, 0.1);
-            border-radius: 15px;
-            border: 1px solid rgba(0, 212, 255, 0.3);
-        }
-
-        .how-it-works h3 {
-            text-align: center;
-            margin-bottom: 25px;
-            color: #00d4ff;
-        }
-
-        .steps {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            flex-wrap: wrap;
-        }
-
-        .step {
-            text-align: center;
-            max-width: 200px;
-        }
-
-        .step-number {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, #00ff88, #00d4ff);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 10px;
-            font-weight: 700;
-            color: #0f0c29;
-        }
-
-        .step p {
-            color: #aaa;
+        .feature-item p {
+            color: #666;
             font-size: 14px;
         }
 
@@ -256,8 +237,9 @@
             text-align: center;
             padding: 20px;
             color: #888;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-top: 1px solid #e0e0e0;
             margin-top: 50px;
+            background: #ffffff;
         }
 
         /* Mobile Responsive */
@@ -276,9 +258,14 @@
                 grid-template-columns: 1fr;
             }
 
-            .steps {
+            .stats-row {
                 flex-direction: column;
                 align-items: center;
+            }
+
+            .stat-item {
+                width: 100%;
+                max-width: 200px;
             }
         }
     </style>
@@ -302,12 +289,27 @@
         <p>Verify certificates instantly using blockchain technology</p>
     </div>
 
+    {% comment %} <div class="stats-row">
+        <div class="stat-item">
+            <div class="stat-number">🔒</div>
+            <div class="stat-label">Secure Verification</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">⛓️</div>
+            <div class="stat-label">Blockchain Powered</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">⚡</div>
+            <div class="stat-label">Instant Results</div>
+        </div>
+    </div> {% endcomment %}
+
     <div class="cards-grid">
         <div class="card">
             <div class="card-icon">📜</div>
             <h3>Verify Certificate</h3>
             <p>Upload a certificate to verify its authenticity using blockchain technology. Get instant results.</p>
-            <a href="#" class="card-btn">Verify Now</a>
+            <a href="{% url 'verify_certificate' %}" class="card-btn">Verify Now</a>
         </div>
 
         <div class="card">
@@ -320,43 +322,33 @@
         <div class="card">
             <div class="card-icon">ℹ️</div>
             <h3>How It Works</h3>
-            <p>Learn how our AI-powered system verifies certificates against blockchain records.</p>
+            <p>Learn how our blockchain-powered system verifies certificates against immutable records.</p>
             <a href="#" class="card-btn">Learn More</a>
         </div>
     </div>
 
-    <div class="upload-section">
-        <h2>🔍 Certificate Verification</h2>
-        <form method="POST" enctype="multipart/form-data">
-            {% csrf_token %}
-            <div class="upload-area">
-                <div class="upload-icon">📁</div>
-                <p>Drag and drop your certificate here</p>
-                <p>or <span>browse files</span></p>
-                <input type="file" name="certificate" accept=".pdf,.jpg,.jpeg,.png" style="display: none;">
+    <div class="features-section">
+        <h2>Why Use CertiVault?</h2>
+        <div class="features-grid">
+            <div class="feature-item">
+                <div class="feature-icon">🔐</div>
+                <h4>Tamper-Proof</h4>
+                <p>Certificates stored on blockchain cannot be altered or forged</p>
             </div>
-            <button type="submit" class="card-btn" style="width: 100%;">Verify Certificate</button>
-        </form>
-
-        <div class="how-it-works">
-            <h3>Verification Process</h3>
-            <div class="steps">
-                <div class="step">
-                    <div class="step-number">1</div>
-                    <p>Upload Certificate</p>
-                </div>
-                <div class="step">
-                    <div class="step-number">2</div>
-                    <p>Generate Hash</p>
-                </div>
-                <div class="step">
-                    <div class="step-number">3</div>
-                    <p>Check Blockchain</p>
-                </div>
-                <div class="step">
-                    <div class="step-number">4</div>
-                    <p>Get Result</p>
-                </div>
+            <div class="feature-item">
+                <div class="feature-icon">🌍</div>
+                <h4>Decentralized</h4>
+                <p>No single point of failure - your data is distributed</p>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">⚡</div>
+                <h4>Instant Verification</h4>
+                <p>Get verification results in seconds, not days</p>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">📊</div>
+                <h4>Complete Audit Trail</h4>
+                <p>Every certificate has a verifiable transaction history</p>
             </div>
         </div>
     </div>
