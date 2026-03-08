@@ -3,9 +3,10 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db import IntegrityError
-from .models import InstituteCertificate
+from .models import InstituteCertificate, Institute, Course
 from .forms import InstituteCertificateForm
 from blockchain.utils import store_hash_on_blockchain
+from students.models import Enrollment, Student
 
 
 @login_required
@@ -74,3 +75,73 @@ def issue_certificate(request):
         form = InstituteCertificateForm(initial=initial)
 
     return render(request, "institute/issue_certificate.html", {"form": form})
+
+
+# ==========================
+# MANAGE ENROLLMENTS
+# ==========================
+@login_required
+def manage_enrollments(request):
+    if request.user.user_type != "institution":
+        return redirect("institution_login")
+    
+    # Get the institute profile
+    try:
+        institute = Institute.objects.get(user=request.user)
+    except Institute.DoesNotExist:
+        messages.error(request, "Institute profile not found.")
+        return redirect("institution_dashboard")
+    
+    # Get all enrollments for this institute
+    enrollments = Enrollment.objects.filter(
+        institute=institute
+    ).select_related('student', 'course').order_by('-created_at')
+    
+    # Get counts
+    pending_count = enrollments.filter(status='Pending').count()
+    approved_count = enrollments.filter(status='Approved').count()
+    completed_count = enrollments.filter(status='Completed').count()
+    
+    return render(request, "institute/manage_enrollments.html", {
+        'enrollments': enrollments,
+        'pending_count': pending_count,
+        'approved_count': approved_count,
+        'completed_count': completed_count,
+    })
+
+
+# ==========================
+# APPROVE/REJECT ENROLLMENT
+# ==========================
+@login_required
+def update_enrollment(request, enrollment_id, action):
+    if request.user.user_type != "institution":
+        return redirect("institution_login")
+    
+    try:
+        institute = Institute.objects.get(user=request.user)
+        enrollment = Enrollment.objects.get(id=enrollment_id, institute=institute)
+        
+        if action == 'approve':
+            enrollment.status = 'Approved'
+            enrollment.save()
+            messages.success(request, f"Enrollment approved for {enrollment.student.full_name}")
+        elif action == 'reject':
+            enrollment.status = 'Rejected'
+            enrollment.save()
+            messages.error(request, f"Enrollment rejected for {enrollment.student.full_name}")
+        elif action == 'complete':
+            enrollment.status = 'Completed'
+            from django.utils import timezone
+            enrollment.completion_date = timezone.now().date()
+            enrollment.save()
+            messages.success(request, f"Course completed for {enrollment.student.full_name}. They can now request a certificate.")
+        
+        return redirect("institute:manage_enrollments")
+        
+    except Enrollment.DoesNotExist:
+        messages.error(request, "Enrollment not found.")
+        return redirect("institute:manage_enrollments")
+    except Institute.DoesNotExist:
+        messages.error(request, "Institute profile not found.")
+        return redirect("institution_dashboard")

@@ -4,7 +4,137 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import CustomUser
 from institute.models import Institute
+import random
+from django.shortcuts import render, redirect
+from django.core.mail import send_mail
+from django.contrib.auth import login
+from .models import CustomUser
 
+# ==========================
+# STUDENT REGISTER - OTP VERIFICATION
+# ==========================
+
+def student_register(request):
+    """Step 1: Show registration form to enter email for OTP"""
+    if request.method == "POST":
+        email = request.POST.get("email")
+        
+        if CustomUser.objects.filter(email=email).exists():
+            return render(request, "student/register.html", {
+                "error": "Email already exists"
+            })
+        
+        # Generate OTP and send to email
+        otp = str(random.randint(100000, 999999))
+        
+        # Store temporarily in session
+        request.session['student_reg_email'] = email
+        request.session['student_reg_otp'] = otp
+        
+        try:
+            send_mail(
+                "CertiVault Registration OTP",
+                f"Your registration OTP is: {otp}",
+                "certivault@gmail.com",
+                [email],
+                fail_silently=False
+            )
+        except:
+            # For testing, show OTP in console
+            print(f"OTP for {email}: {otp}")
+        
+        return redirect("verify_student_register_otp")
+    
+    return render(request, "student/register.html")
+
+
+def verify_student_register_otp(request):
+    """Step 2: Verify OTP and set password"""
+    if request.method == "POST":
+        otp = request.POST.get("otp")
+        password = request.POST.get("password")
+        confirm_password = request.POST.get("confirm_password")
+        
+        stored_otp = request.session.get('student_reg_otp')
+        email = request.session.get('student_reg_email')
+        
+        if otp != stored_otp:
+            return render(request, "student/verify_register_otp.html", {
+                "error": "Invalid OTP"
+            })
+        
+        if password != confirm_password:
+            return render(request, "student/verify_register_otp.html", {
+                "error": "Passwords do not match"
+            })
+        
+        if len(password) < 6:
+            return render(request, "student/verify_register_otp.html", {
+                "error": "Password must be at least 6 characters"
+            })
+        
+        # Create username from email
+        username = email.split('@')[0]
+        
+        # Create student user
+        user = CustomUser.objects.create_user(
+            username=username,
+            email=email,
+            password=password,
+            user_type="student"
+        )
+        
+        # Create Student record with email
+        from students.models import Student
+        Student.objects.create(
+            user=user,
+            student_id=f"STU{user.id}",  # Generate student ID based on user ID
+            full_name=username,  # Use username as temporary full name
+            email=email,
+            phone="",  # Placeholder - to be updated later
+            address=""  # Placeholder - to be updated later
+        )
+        
+        # Clear session
+        del request.session['student_reg_email']
+        del request.session['student_reg_otp']
+        
+        messages.success(request, "Registration successful! Please login.")
+        return redirect("student_login")
+    
+    return render(request, "student/verify_register_otp.html")
+
+
+# ==========================
+# STUDENT LOGIN (Password-based)
+# ==========================
+
+def student_login(request):
+
+    if request.method == "POST":
+        email = request.POST.get("email")
+        password = request.POST.get("password")
+
+        try:
+            student = CustomUser.objects.get(email=email, user_type='student')
+            
+            # Authenticate with username and password
+            user = authenticate(request, username=student.username, password=password)
+
+            if user is not None:
+                login(request, user)
+                return redirect("student_dashboard")
+            else:
+                return render(request, "student/login.html", {
+                    "error": "Invalid password"
+                })
+
+        except CustomUser.DoesNotExist:
+
+            return render(request,"student/login.html",
+                          {"error":"Student account not found"})
+
+    return render(request,"student/login.html")
 
 # ==========================
 # INSTITUTION REGISTER
@@ -13,56 +143,79 @@ def institute_register(request):
 
     if request.method == "POST":
 
-        username = request.POST.get("username")
-        password = request.POST.get("password")
+        try:
+            username = request.POST.get("username")
+            password = request.POST.get("password")
 
-        institute_name = request.POST.get("institute_name")
-        institute_code = request.POST.get("institute_code")
-        affiliation = request.POST.get("affiliation")
-        type_inst = request.POST.get("type")
-        established_year = request.POST.get("established_year")
-        email = request.POST.get("email")
-        phone = request.POST.get("phone")
-        website = request.POST.get("website")
-        address = request.POST.get("address")
-        admin_name = request.POST.get("admin_name")
-        designation = request.POST.get("designation")
-        govt_reg_no = request.POST.get("govt_reg_no")
-        accreditation = request.POST.get("accreditation")
+            institute_name = request.POST.get("institute_name")
+            institute_code = request.POST.get("institute_code")
+            affiliation = request.POST.get("affiliation")
+            type_inst = request.POST.get("type")
+            established_year = request.POST.get("established_year")
+            email = request.POST.get("email")
+            phone = request.POST.get("phone")
+            website = request.POST.get("website")
+            address = request.POST.get("address")
+            admin_name = request.POST.get("admin_name")
+            designation = request.POST.get("designation")
+            govt_reg_no = request.POST.get("govt_reg_no")
+            accreditation = request.POST.get("accreditation")
 
-        if CustomUser.objects.filter(username=username).exists():
-            messages.error(request, "Username already exists")
-            return redirect("institute_register")
+            if CustomUser.objects.filter(username=username).exists():
+                messages.error(request, "Username already exists")
+                return render(request, "accounts/institution_register.html")
 
-        # Create login account
-        user = CustomUser.objects.create_user(
-            username=username,
-            password=password,
-            user_type="institution"
-        )
+            # Create login account
+            user = CustomUser.objects.create_user(
+                username=username,
+                password=password,
+                user_type="institution"
+            )
 
-        # Create institute profile
-        Institute.objects.create(
-            user=user,
-            institute_name=institute_name,
-            institute_code=institute_code,
-            affiliation=affiliation,
-            type=type_inst,
-            established_year=established_year,
-            email=email,
-            phone=phone,
-            website=website,
-            address=address,
-            admin_name=admin_name,
-            designation=designation,
-            govt_reg_no=govt_reg_no,
-            accreditation=accreditation,
-            authorization_file=request.FILES.get("authorization_file"),
-            logo=request.FILES.get("logo"),
-        )
+            # Create institute profile
+            institute = Institute.objects.create(
+                user=user,
+                institute_name=institute_name,
+                institute_code=institute_code,
+                affiliation=affiliation,
+                type=type_inst,
+                established_year=int(established_year) if established_year else None,
+                email=email,
+                phone=phone,
+                website=website,
+                address=address,
+                admin_name=admin_name,
+                designation=designation,
+                govt_reg_no=govt_reg_no,
+                accreditation=accreditation,
+                logo=request.FILES.get("logo"),
+                signature=request.FILES.get("signature"),
+                provided_courses=request.POST.get("provided_courses", ""),
+            )
 
-        messages.success(request, "Registration submitted. Wait for approval.")
-        return redirect("login")
+            # Handle course entries
+            from institute.models import Course
+            course_count = int(request.POST.get("course_count", 0))
+            
+            for i in range(1, course_count + 1):
+                course_name = request.POST.get(f"course_name_{i}")
+                duration = request.POST.get(f"duration_{i}")
+                
+                if course_name and duration:
+                    Course.objects.create(
+                        institute=institute,
+                        course_name=course_name,
+                        duration_months=int(duration)
+                    )
+
+            messages.success(request, "Registration submitted. Wait for approval.")
+            return redirect("/accounts/institution/login/")
+            
+        except Exception as e:
+            # Print error for debugging
+            print(f"Registration Error: {str(e)}")
+            messages.error(request, f"Registration error: {str(e)}")
+            return render(request, "accounts/institution_register.html")
 
     return render(request, "accounts/institution_register.html")
 
@@ -109,6 +262,9 @@ def institution_dashboard(request):
     # placeholder values for pending/verified; adjust if you add status fields later
     pending = 0
     verified = 0
+
+    # Get all certificates for this institute
+    certificates = InstituteCertificate.objects.filter(institute=request.user).order_by('-created_at')
 
     form = InstituteCertificateForm()
 
@@ -168,6 +324,7 @@ def institution_dashboard(request):
         "verified": verified,
         "last_tx_hash": last_tx,
         "last_verified": last_verified,
+        "certificates": certificates,
     })
 
 
@@ -292,3 +449,121 @@ def user_dashboard(request):
 def user_logout(request):
     logout(request)
     return redirect("/")
+
+
+# ==========================
+# STUDENT DASHBOARD
+# ==========================
+
+
+@login_required
+def student_dashboard(request):
+
+    if request.user.user_type != "student":
+        return redirect("student_login")
+
+    # Import models
+    from students.models import Student, Enrollment
+    from institute.models import Institute, Course
+    
+    # Get or create student profile
+    student, created = Student.objects.get_or_create(
+        user=request.user,
+        defaults={
+            'student_id': f"STU{request.user.id}",
+            'full_name': request.user.username,
+            'email': request.user.email,
+            'phone': "",
+            'address': ""
+        }
+    )
+    
+    # Check if profile is incomplete
+    profile_incomplete = not student.phone or not student.address
+    
+    # Get all institutes with their courses (show all for visibility)
+    institutes = Institute.objects.all().prefetch_related('courses')
+    
+    # Get student's enrollments
+    enrollments = Enrollment.objects.filter(student=student).select_related('institute', 'course').order_by('-created_at')
+    
+    # Get pending course requests
+    pending_requests = enrollments.filter(status='Pending')
+    
+    # Get approved/completed courses
+    active_courses = enrollments.filter(status='Approved')
+    completed_courses = enrollments.filter(status='Completed')
+    
+    return render(request, "student/dashboard.html", {
+        'student': student,
+        'profile_incomplete': profile_incomplete,
+        'institutes': institutes,
+        'enrollments': enrollments,
+        'pending_requests': pending_requests,
+        'active_courses': active_courses,
+        'completed_courses': completed_courses,
+    })
+
+
+# ==========================
+# STUDENT PROFILE UPDATE
+# ==========================
+@login_required
+def student_profile_update(request):
+    if request.user.user_type != "student":
+        return redirect("student_login")
+    
+    from students.models import Student
+    
+    student = Student.objects.get(user=request.user)
+    
+    if request.method == "POST":
+        student.full_name = request.POST.get("full_name")
+        student.phone = request.POST.get("phone")
+        student.address = request.POST.get("address")
+        student.save()
+        messages.success(request, "Profile updated successfully!")
+        return redirect("student_dashboard")
+    
+    return render(request, "student/profile_update.html", {"student": student})
+
+
+# ==========================
+# COURSE ENROLLMENT REQUEST
+# ==========================
+@login_required
+def enroll_course(request):
+    if request.user.user_type != "student":
+        return redirect("student_login")
+    
+    if request.method == "POST":
+        from students.models import Student, Enrollment
+        from institute.models import Course
+        
+        course_id = request.POST.get("course_id")
+        
+        try:
+            student = Student.objects.get(user=request.user)
+            course = Course.objects.get(id=course_id)
+            
+            # Check if already enrolled
+            if Enrollment.objects.filter(student=student, course=course).exists():
+                messages.error(request, "You have already enrolled in this course!")
+                return redirect("student_dashboard")
+            
+            # Create enrollment request
+            Enrollment.objects.create(
+                student=student,
+                institute=course.institute,
+                course=course,
+                status="Pending"
+            )
+            
+            messages.success(request, "Course enrollment request submitted! Wait for institute approval.")
+            return redirect("student_dashboard")
+            
+        except Exception as e:
+            messages.error(request, f"Error: {str(e)}")
+            return redirect("student_dashboard")
+    
+    return redirect("student_dashboard")

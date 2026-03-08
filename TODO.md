@@ -1,23 +1,39 @@
-# TODO: Fix Blockchain Connection Error
+# TODO - Student Course Enrollment & Certificate Flow
 
-## Problem
-The blockchain connection check in `blockchain/utils.py` runs at import time, causing Django to fail to start when Ganache is not running.
+## ✅ Phase 1: Profile Completion Alert - COMPLETED
+- [x] 1.1 Add profile completion check in student dashboard view
+- [x] 1.2 Update student dashboard template to show alert if profile incomplete
+- [x] 1.3 Create profile edit form and view (student_profile_update)
 
-## Solution
-Make the blockchain connection lazy - only connect when the function is actually called, not at import time.
+## ✅ Phase 2: Show Institutes & Courses - COMPLETED
+- [x] 2.1 Update student dashboard view to fetch approved institutes and courses
+- [x] 2.2 Update student dashboard template to display institutes/courses
 
-## Tasks Completed
-- [x] Modify `blockchain/utils.py` to make blockchain connection lazy
-  - Remove module-level connection check
-  - Add helper function to get web3 connection
-  - Update functions to check connection before executing
+## ✅ Phase 3: Course Enrollment Request - COMPLETED
+- [x] 3.1 Create enrollment request view (enroll_course)
+- [x] 3.2 Add URL for enrollment
+- [x] 3.3 Student can select institute & course to enroll
 
-## Additional Fixes
-- [x] Fixed user dashboard certificate upload
-  - Added JavaScript to make upload area clickable in `templates/users/user_dashboard.html`
-  - Updated `accounts/views.py` to include certificate verification logic in user_dashboard view
-- [x] Added better error handling for blockchain connection errors
-  - Shows friendly message when Ganache is not running: "⚠️ Blockchain not connected. Please start Ganache to verify certificates."
+## ✅ Phase 4: Institute Approval Workflow - COMPLETED
+- [x] 4.1 Add view for institute to see pending enrollments (manage_enrollments)
+- [x] 4.2 Add approve/reject functionality (update_enrollment)
+- [x] 4.3 Update institute dashboard with link to manage enrollments
 
-## Important Note
-To verify certificates, Ganache must be running on port 7545. The application will work without Ganache, but certificate verification will show a friendly error message.
+## ✅ Phase 5: Course Completion - COMPLETED
+- [x] 5.1 Add view for institute to mark course as completed (update_enrollment with 'complete' action)
+
+## ⏳ Phase 6: Certificate Request (To be implemented)
+- [ ] 6.1 Allow student to request certificate after completion
+- [ ] 6.2 Institute can issue certificate
+
+## Files Modified/Created:
+- accounts/views.py - Added student_dashboard, student_profile_update, enroll_course
+- accounts/urls.py - Added new URLs
+- students/models.py - Already has Enrollment model
+- institute/views.py - Added manage_enrollments, update_enrollment
+- institute/urls.py - Added new URLs
+- templates/student/dashboard.html - Updated with new UI
+- templates/student/profile_update.html - Created
+- templates/institute/manage_enrollments.html - Created
+- templates/institute/institution_dashboard.html - Updated sidebar
+

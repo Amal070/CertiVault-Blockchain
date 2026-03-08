@@ -3,6 +3,10 @@ from django.db import models
 from django.conf import settings
 from django.utils import timezone
 
+from django.conf import settings
+from django.db import models
+
+
 class Institute(models.Model):
 
     STATUS_CHOICES = (
@@ -36,7 +40,15 @@ class Institute(models.Model):
     govt_reg_no = models.CharField(max_length=100, unique=True)
     accreditation = models.CharField(max_length=100)
 
-    authorization_file = models.FileField(upload_to='authorization/')
+    # Courses provided by institute
+    provided_courses = models.TextField(
+        help_text="Example: Python, Data Science, 3 Month Diploma, 1 Year Course"
+    )
+
+    # Signature used for certificate generation
+    signature = models.ImageField(upload_to='signatures/')
+
+    # Institute logo
     logo = models.ImageField(upload_to='logos/')
 
     status = models.CharField(
@@ -49,6 +61,23 @@ class Institute(models.Model):
 
     def __str__(self):
         return self.institute_name
+
+
+class Course(models.Model):
+
+    institute = models.ForeignKey(
+        Institute,
+        on_delete=models.CASCADE,
+        related_name="courses"
+    )
+
+    course_name = models.CharField(max_length=200)
+    duration_months = models.IntegerField()
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.course_name
 
 
 class Certificate(models.Model):
