@@ -218,6 +218,149 @@
         .back-link:hover {
             color: #1a1a1a;
         }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from {opacity: 0;}
+            to {opacity: 1;}
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 450px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            animation: slideIn 0.3s;
+        }
+
+        @keyframes slideIn {
+            from {transform: translateY(-50px); opacity: 0;}
+            to {transform: translateY(0); opacity: 1;}
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .modal-header h3 {
+            font-size: 20px;
+            color: #1a1a1a;
+        }
+
+        .close {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .close:hover {
+            color: #333;
+        }
+
+        .student-info {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .student-info p {
+            margin: 5px 0;
+            color: #555;
+            font-size: 14px;
+        }
+
+        .student-info strong {
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #4CAF50;
+            box-shadow: 0 0 8px rgba(76, 175, 80, 0.3);
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-submit {
+            flex: 1;
+            padding: 12px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-submit:hover {
+            background: #45a049;
+        }
+
+        .btn-cancel {
+            flex: 1;
+            padding: 12px;
+            background: #f5f5f5;
+            color: #555;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-cancel:hover {
+            background: #e0e0e0;
+        }
     </style>
 </head>
 <body>
@@ -291,7 +434,11 @@
                                 {% elif enrollment.status == 'Approved' %}
                                 <a href="{% url 'institute:update_enrollment' enrollment.id 'complete' %}" class="btn btn-complete">Mark Complete</a>
                                 {% elif enrollment.status == 'Completed' %}
-                                <a href="{% url 'institute:issue_certificate' %}" class="btn btn-issue">Issue Certificate</a>
+                                {% if enrollment.certificate_generated %}
+                                <a href="{{ enrollment.certificate_file.url }}" class="btn btn-issue" target="_blank">View Certificate</a>
+                                {% else %}
+                                <span class="btn" style="background: #FF9800; color: white;">Awaiting Certificate Request</span>
+                                {% endif %}
                                 {% endif %}
                             </div>
                         </td>
@@ -307,6 +454,79 @@
             </table>
         </div>
     </div>
+
+    <!-- Certificate Modal -->
+    <div id="certificateModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>🎓 Issue Certificate</h3>
+                <span class="close" onclick="closeModal()">&times;</span>
+            </div>
+            
+            <div class="student-info">
+                <p><strong>Student:</strong> <span id="modalStudentName"></span></p>
+                <p><strong>Course:</strong> <span id="modalCourseName"></span></p>
+            </div>
+
+            <form id="certificateForm" method="POST" action="{% url 'institute:generate_certificate' 0 %}">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label for="marks">Marks Obtained (%)</label>
+                    <input type="number" name="marks" id="marksInput" step="0.01" min="0" max="100" placeholder="Enter marks (e.g., 85.50)" required>
+                </div>
+
+                <div class="modal-buttons">
+                    <button type="button" class="btn-cancel" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn-submit">Generate Certificate</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Get modal element
+        var modal = document.getElementById("certificateModal");
+        
+        // Function to open modal
+        function openCertificateModal(enrollmentId, studentName, courseName) {
+            // Set values
+            document.getElementById("modalStudentName").textContent = studentName;
+            document.getElementById("modalCourseName").textContent = courseName;
+            document.getElementById("marksInput").value = "";
+            
+            // Update form action
+            var form = document.getElementById("certificateForm");
+            form.action = "{% url 'institute:generate_certificate' 0 %}".replace("0", enrollmentId);
+            
+            // Show modal
+            modal.style.display = "block";
+            
+            // Focus on input
+            setTimeout(function() {
+                document.getElementById("marksInput").focus();
+            }, 100);
+        }
+        
+        // Function to close modal
+        function closeModal() {
+            modal.style.display = "none";
+        }
+        
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+        
+        // Close modal on Escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === "Escape") {
+                closeModal();
+            }
+        });
+    </script>
 
 </body>
 </html>

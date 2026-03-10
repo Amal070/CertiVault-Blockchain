@@ -2,6 +2,7 @@ import hashlib
 from django.shortcuts import render
 from blockchain.utils import verify_hash_from_blockchain
 from institute.models import Certificate
+from students.models import Enrollment
 from .models import VerificationHistory
 
 
@@ -72,6 +73,7 @@ def verify_certificate(request):
 
     result = None
     certificate_data = None
+    certificate_type = None
 
     if request.method == "POST":
 
@@ -91,10 +93,24 @@ def verify_certificate(request):
                 if is_valid:
                     result = "VALID"
 
-                    # Fetch certificate details
-                    certificate_data = Certificate.objects.filter(
+                    # Try to find certificate in InstituteCertificate model
+                    from institute.models import InstituteCertificate
+                    certificate_data = InstituteCertificate.objects.filter(
                         certificate_hash=hash_value
                     ).first()
+                    
+                    if certificate_data:
+                        certificate_type = "institute"
+                    else:
+                        # Try to find certificate in Enrollment model using certificate_hash (efficient lookup)
+                        enrollment = Enrollment.objects.filter(
+                            certificate_hash=hash_value,
+                            certificate_generated=True
+                        ).first()
+                        
+                        if enrollment:
+                            certificate_data = enrollment
+                            certificate_type = "student"
 
                 else:
                     result = "INVALID"
@@ -117,5 +133,6 @@ def verify_certificate(request):
 
     return render(request, "users/verify_certificate.html", {
         "result": result,
-        "certificate": certificate_data
+        "certificate": certificate_data,
+        "certificate_type": certificate_type
     })

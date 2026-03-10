@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+{% load student_filters %}
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -395,9 +396,9 @@
             background: #FFC107;
             color: #1a1a1a;
             border: none;
-            border-radius: 15px;
-            cursor: pointer;
-            font-size: 12px;
+            border-radius: 15px pointer;
+            font;
+            cursor:-size: 12px;
             font-weight: 500;
             text-decoration: none;
         }
@@ -417,6 +418,76 @@
             font-size: 48px;
             color: #ddd;
             margin-bottom: 15px;
+        }
+
+        /* Certificate Grid */
+        .certificate-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .certificate-card {
+            border: 1px solid #eee;
+            border-radius: 10px;
+            padding: 20px;
+            background: linear-gradient(135deg, #FFF8E1 0%, #FFFDE7 100%);
+            transition: all 0.3s ease;
+        }
+
+        .certificate-card:hover {
+            border-color: #FFC107;
+            box-shadow: 0 4px 15px rgba(255, 193, 7, 0.2);
+            transform: translateY(-3px);
+        }
+
+        .certificate-icon {
+            width: 50px;
+            height: 50px;
+            background: #FFC107;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            margin-bottom: 15px;
+        }
+
+        .certificate-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+        }
+
+        .certificate-details {
+            font-size: 13px;
+            color: #777;
+            margin-bottom: 15px;
+        }
+
+        .certificate-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .download-btn {
+            flex: 1;
+            padding: 8px 15px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            text-decoration: none;
+            text-align: center;
+        }
+
+        .download-btn:hover {
+            background: #43A047;
         }
 
         /* Responsive */
@@ -451,7 +522,7 @@
         <div class="logo">Certi<span>Vault</span></div>
         <div class="navbar-right">
             <div class="user-info">
-                <span class="user-name">{{ user.username }}</span>
+                <span class="user-name">{% if student.full_name %}{{ student.full_name }}{% else %}{{ user.username }}{% endif %}</span>
                 <div class="profile-icon">
                     <i class="fas fa-user"></i>
                 </div>
@@ -465,8 +536,8 @@
     <!-- Sidebar -->
     <div class="sidebar">
         <ul class="sidebar-menu">
-            <li><a href="#" class="active"><i class="fas fa-home"></i> <span>Dashboard</span></a></li>
-            <li><a href="#mycourses"><i class="fas fa-book"></i> <span>My Courses</span></a></li>
+            <li><a href="#"><i class="fas fa-home"></i> <span>Dashboard</span></a></li>
+            <li><a href="#my-enrollments"><i class="fas fa-graduation-cap"></i> <span>My Courses</span></a></li>
             <li><a href="#mycertificates"><i class="fas fa-certificate"></i> <span>My Certificates</span></a></li>
             <li><a href="{% url 'students:student_profile_update' %}"><i class="fas fa-user-edit"></i> <span>Edit Profile</span></a></li>
             <li><a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a></li>
@@ -524,10 +595,62 @@
             </div>
         </div>
 
-        <!-- Available Institutes & Courses -->
-        <div class="section">
+        <!-- My Enrollments -->
+        <div class="section" id="my-enrollments">
             <div class="section-header">
-                <h2><i class="fas fa-university"></i> Available Institutes & Courses</h2>
+                <h2><i class="fas fa-list"></i> My Enrollments</h2>
+            </div>
+            <div class="section-content">
+                {% if enrollments %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Institute</th>
+                            <th>Course</th>
+                            <th>Duration</th>
+                            <th>Request Date</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for enrollment in enrollments %}
+                        <tr>
+                            <td>{{ enrollment.institute.institute_name }}</td>
+                            <td>{{ enrollment.course.course_name }}</td>
+                            <td>{{ enrollment.course.duration_months }} months</td>
+                            <td>{{ enrollment.request_date|date:"d M Y" }}</td>
+                            <td>
+                                <span class="status-badge status-{{ enrollment.status|lower }}">
+                                    {{ enrollment.status }}
+                                </span>
+                            </td>
+                            <td>
+                                {% if enrollment.status == 'Completed' %}
+                                <span style="font-size: 12px; color: #777;">Completed</span>
+                                {% elif enrollment.status == 'Approved' %}
+                                <span style="font-size: 12px; color: #777;">In Progress</span>
+                                {% else %}
+                                <span style="font-size: 12px; color: #777;">Waiting</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <div class="no-data">
+                    <i class="fas fa-book-open"></i>
+                    <p>You haven't enrolled in any courses yet.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Available Courses for Enrollment -->
+        <div class="section" id="available-courses">
+            <div class="section-header">
+                <h2><i class="fas fa-university"></i> Available Courses for Enrollment</h2>
             </div>
             <div class="section-content">
                 {% if institutes %}
@@ -550,21 +673,36 @@
                             <i class="fas fa-book"></i> {{ institute.courses.count }} Courses Available
                         </div>
                         {% if institute.courses.all %}
-                        <form method="POST" action="{% url 'students:enroll_course' %}">
-                            {% csrf_token %}
-                            <div class="course-list">
-                                {% for course in institute.courses.all %}
-                                <div class="course-item">
-                                    <div>
-                                        <div class="course-name">{{ course.course_name }}</div>
-                                        <div class="course-duration">{{ course.duration_months }} months</div>
+                        <div class="course-list">
+                            {% for course in institute.courses.all %}
+                            {% with active_enrollment=active_enrollments_by_institute|get_item:institute.id %}
+                            <div class="course-item">
+                                <div>
+                                    <div class="course-name">{{ course.course_name }}</div>
+                                    <div class="course-duration">{{ course.duration_months }} months</div>
+                                    {% if active_enrollment and active_enrollment.course.id != course.id %}
+                                    <div style="font-size: 11px; color: #FF9800; margin-top: 2px;">
+                                        <i class="fas fa-info-circle"></i> Already enrolled in: {{ active_enrollment.course.course_name }}
                                     </div>
+                                    {% endif %}
+                                </div>
+                                {% if active_enrollment %}
+                                    {% if active_enrollment.course.id == course.id %}
+                                    <button type="button" class="enroll-btn" style="background: #2196F3;" disabled>Enrolled</button>
+                                    {% else %}
+                                    <button type="button" class="enroll-btn" style="background: #ccc; cursor: not-allowed;" disabled>Unavailable</button>
+                                    {% endif %}
+                                {% else %}
+                                <form method="POST" action="{% url 'students:enroll_course' %}" style="display:inline;">
+                                    {% csrf_token %}
                                     <input type="hidden" name="course_id" value="{{ course.id }}">
                                     <button type="submit" class="enroll-btn">Enroll</button>
-                                </div>
-                                {% endfor %}
+                                </form>
+                                {% endif %}
                             </div>
-                        </form>
+                            {% endwith %}
+                            {% endfor %}
+                        </div>
                         {% else %}
                         <p style="font-size: 12px; color: #777; margin-top: 10px;">No courses available yet.</p>
                         {% endif %}
@@ -580,72 +718,102 @@
             </div>
         </div>
 
-        <!-- My Enrollments -->
-        <div class="section" id="mycourses">
-            <div class="section-header">
-                <h2><i class="fas fa-book"></i> My Courses</h2>
-            </div>
-            <div class="section-content">
-                {% if enrollments %}
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Institute</th>
-                            <th>Course</th>
-                            <th>Duration</th>
-                            <th>Request Date</th>
-                            <th>Status</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for enrollment in enrollments %}
-                        <tr>
-                            <td>{{ enrollment.institute.institute_name }}</td>
-                            <td>{{ enrollment.course.course_name }}</td>
-                            <td>{{ enrollment.course.duration_months }} months</td>
-                            <td>{{ enrollment.created_at|date:"d M Y" }}</td>
-                            <td>
-                                <span class="status-badge status-{{ enrollment.status|lower }}">
-                                    {{ enrollment.status }}
-                                </span>
-                            </td>
-                            <td>
-                                {% if enrollment.status == 'Completed' %}
-                                <a href="#" class="action-btn">Request Certificate</a>
-                                {% elif enrollment.status == 'Approved' %}
-                                <span style="font-size: 12px; color: #777;">In Progress</span>
-                                {% else %}
-                                <span style="font-size: 12px; color: #777;">Waiting</span>
-                                {% endif %}
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-                {% else %}
-                <div class="no-data">
-                    <i class="fas fa-book-open"></i>
-                    <p>You haven't enrolled in any courses yet.</p>
-                </div>
-                {% endif %}
-            </div>
-        </div>
-
         <!-- My Certificates -->
         <div class="section" id="mycertificates">
             <div class="section-header">
                 <h2><i class="fas fa-certificate"></i> My Certificates</h2>
             </div>
             <div class="section-content">
+                {% if completed_courses %}
+                <div class="certificate-grid">
+                    {% for enrollment in completed_courses %}
+                    <div class="certificate-card">
+                        <div class="certificate-icon">
+                            <i class="fas fa-certificate"></i>
+                        </div>
+                        <div class="certificate-title">{{ enrollment.course.course_name }}</div>
+                        <div class="certificate-details">
+                            <i class="fas fa-university"></i> {{ enrollment.institute.institute_name }}<br>
+                            <i class="fas fa-calendar"></i> Completed: {{ enrollment.completion_date|date:"d M Y" }}
+                            {% if enrollment.marks %}
+                            <br><i class="fas fa-star"></i> Marks: {{ enrollment.marks }}%
+                            {% endif %}
+                        </div>
+                        <div class="certificate-actions">
+                            {% if enrollment.certificate_file %}
+                            <a href="{{ enrollment.certificate_file.url }}" class="download-btn" target="_blank" download>
+                                <i class="fas fa-download"></i> Download
+                            </a>
+                            {% elif enrollment.certificate_requests.all %}
+                                {% with enrollment.certificate_requests.all|first as req %}
+                                {% if req.status == 'Pending' %}
+                                <span style="font-size: 12px; color: #FF9800; text-align: center; width: 100%;">
+                                    <i class="fas fa-clock"></i> Request Pending
+                                </span>
+                                {% elif req.status == 'Approved' %}
+                                <a href="#" class="download-btn" style="background: #4CAF50;">
+                                    <i class="fas fa-check"></i> Certificate Ready
+                                </a>
+                                {% else %}
+                                <button class="download-btn" onclick="showRequestModal('{{ enrollment.id }}', '{{ enrollment.course.course_name }}')" style="background: #FF9800;">
+                                    <i class="fas fa-redo"></i> Request Again
+                                </button>
+                                {% endif %}
+                                {% endwith %}
+                            {% else %}
+                            <button class="download-btn" onclick="showRequestModal('{{ enrollment.id }}', '{{ enrollment.course.course_name }}')" style="background: #FF9800;">
+                                <i class="fas fa-file-signature"></i> Request Certificate
+                            </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
                 <div class="no-data">
                     <i class="fas fa-certificate"></i>
-                    <p>No certificates issued yet.</p>
+                    <p>No certificates issued yet. Complete a course to receive your certificate.</p>
                 </div>
+                {% endif %}
             </div>
         </div>
 
     </div>
+
+    <!-- Certificate Request Modal -->
+    <div id="certRequestModal" style="display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5);">
+        <div style="background: white; margin: 10% auto; padding: 30px; border-radius: 15px; width: 90%; max-width: 450px;">
+            <h3 style="margin-bottom: 15px;"><i class="fas fa-file-signature"></i> Request Certificate</h3>
+            <p style="margin-bottom: 20px; color: #777;">Course: <strong id="modalCourseName"></strong></p>
+            <p style="margin-bottom: 20px; color: #666; font-size: 14px;">Your certificate will be issued using your registered name: <strong>{{ student.full_name }}</strong></p>
+            <form method="POST" action="{% url 'students:request_certificate' %}">
+                {% csrf_token %}
+                <input type="hidden" name="enrollment_id" id="modalEnrollmentId">
+                <div style="display: flex; gap: 10px;">
+                    <button type="button" onclick="closeRequestModal()" style="flex: 1; padding: 12px; background: #eee; border: none; border-radius: 8px; cursor: pointer;">Cancel</button>
+                    <button type="submit" style="flex: 1; padding: 12px; background: #FF9800; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">Confirm Request</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function showRequestModal(enrollmentId, courseName) {
+            document.getElementById('modalEnrollmentId').value = enrollmentId;
+            document.getElementById('modalCourseName').textContent = courseName;
+            document.getElementById('certRequestModal').style.display = 'block';
+        }
+        
+        function closeRequestModal() {
+            document.getElementById('certRequestModal').style.display = 'none';
+        }
+        
+        window.onclick = function(event) {
+            if (event.target == document.getElementById('certRequestModal')) {
+                closeRequestModal();
+            }
+        }
+    </script>
 
 </body>
 </html>

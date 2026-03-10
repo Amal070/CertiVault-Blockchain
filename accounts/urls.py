@@ -11,4 +11,9 @@ urlpatterns = [
     path('student/register/', views.student_register, name='student_register'),
     path('student/verify-register-otp/', views.verify_student_register_otp, name='verify_student_register_otp'),
     path('logout/', views.user_logout, name='logout'),
+    
+    # Admin URLs (using 'manage' prefix to avoid conflict with Django admin)
+    path('manage/login/', views.admin_login, name='admin_login'),
+    path('manage/dashboard/', views.admin_dashboard, name='admin_dashboard'),
+    path('manage/approve-institute/<int:institute_id>/<str:action>/', views.approve_institute, name='approve_institute'),
 ]

@@ -96,6 +96,39 @@ class Enrollment(models.Model):
         blank=True
     )
 
+    marks = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        help_text="Marks obtained in the course"
+    )
+
+    certificate_generated = models.BooleanField(
+        default=False,
+        help_text="Whether certificate has been generated"
+    )
+
+    certificate_file = models.FileField(
+        upload_to='student_certificates/',
+        null=True,
+        blank=True
+    )
+
+    blockchain_tx_hash = models.CharField(
+        max_length=100,
+        null=True,
+        blank=True,
+        help_text="Blockchain transaction hash for certificate verification"
+    )
+
+    certificate_hash = models.CharField(
+        max_length=64,
+        null=True,
+        blank=True,
+        help_text="SHA256 hash of the certificate file for blockchain verification"
+    )
+
     created_at = models.DateTimeField(
         auto_now_add=True
     )
@@ -114,15 +147,9 @@ class CertificateRequest(models.Model):
 
     enrollment = models.ForeignKey(
         Enrollment,
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        related_name="certificate_requests"
     )
-
-    certificate_name = models.CharField(
-        max_length=200,
-        help_text="Name to appear on certificate"
-    )
-
-    date_of_birth = models.DateField()
 
     request_date = models.DateTimeField(
         auto_now_add=True
@@ -131,8 +158,8 @@ class CertificateRequest(models.Model):
     status = models.CharField(
         max_length=20,
         choices=STATUS_CHOICES,
-        default="Pending"
+        default='Pending'
     )
 
     def __str__(self):
-        return f"{self.certificate_name} - {self.enrollment.course.course_name}"
+        return f"Certificate Request - {self.enrollment.course.course_name} ({self.status})"

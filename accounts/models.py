@@ -8,6 +8,7 @@ class CustomUser(AbstractUser):
         ('institution', 'Institution'),
         ('student', 'Student'),
         ('user', 'User'),   # Public verifier
+        ('admin', 'Admin'),  # Admin dashboard
     )
 
     user_type = models.CharField(max_length=20, choices=USER_TYPE_CHOICES)

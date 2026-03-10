@@ -418,3 +418,122 @@ def user_dashboard(request):
 def user_logout(request):
     logout(request)
     return redirect("/")
+
+
+# ==========================
+# ADMIN LOGIN
+# ==========================
+def admin_login(request):
+    if request.method == "POST":
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+
+        user = authenticate(request, username=username, password=password)
+
+        if user is not None and user.user_type == "admin":
+            login(request, user)
+            return redirect("admin_dashboard")
+        else:
+            return render(request, "accounts/admin_login.html", {
+                "error": "Invalid credentials or not an Admin"
+            })
+
+    return render(request, "accounts/admin_login.html")
+
+
+# ==========================
+# ADMIN DASHBOARD
+# ==========================
+@login_required
+def admin_dashboard(request):
+    if request.user.user_type != "admin":
+        return redirect("admin_login")
+
+    # Import models
+    from institute.models import Institute
+    from students.models import Student, Enrollment, CertificateRequest
+    from accounts.models import CustomUser
+
+    # Get statistics
+    # Institutes
+    total_institutes = Institute.objects.count()
+    pending_institutes = Institute.objects.filter(status='Pending').count()
+    approved_institutes = Institute.objects.filter(status='Approved').count()
+    rejected_institutes = Institute.objects.filter(status='Rejected').count()
+
+    # Students
+    total_students = Student.objects.count()
+
+    # Enrollments
+    total_enrollments = Enrollment.objects.count()
+    pending_enrollments = Enrollment.objects.filter(status='Pending').count()
+    approved_enrollments = Enrollment.objects.filter(status='Approved').count()
+    completed_enrollments = Enrollment.objects.filter(status='Completed').count()
+
+    # Certificate Requests
+    pending_cert_requests = CertificateRequest.objects.filter(status='Pending').count()
+
+    # Recent institute registrations
+    recent_institutes = Institute.objects.order_by('-created_at')[:10]
+
+    # Recent enrollments
+    recent_enrollments = Enrollment.objects.select_related('student', 'course', 'institute').order_by('-created_at')[:10]
+
+    # Recent certificate requests
+    recent_cert_requests = CertificateRequest.objects.select_related(
+        'enrollment', 'enrollment__student', 'enrollment__course', 'enrollment__institute'
+    ).order_by('-request_date')[:10]
+
+    context = {
+        # Institute stats
+        'total_institutes': total_institutes,
+        'pending_institutes': pending_institutes,
+        'approved_institutes': approved_institutes,
+        'rejected_institutes': rejected_institutes,
+
+        # Student stats
+        'total_students': total_students,
+
+        # Enrollment stats
+        'total_enrollments': total_enrollments,
+        'pending_enrollments': pending_enrollments,
+        'approved_enrollments': approved_enrollments,
+        'completed_enrollments': completed_enrollments,
+
+        # Certificate stats
+        'pending_cert_requests': pending_cert_requests,
+
+        # Recent data
+        'recent_institutes': recent_institutes,
+        'recent_enrollments': recent_enrollments,
+        'recent_cert_requests': recent_cert_requests,
+    }
+
+    return render(request, "accounts/admin_dashboard.html", context)
+
+
+# ==========================
+# APPROVE/REJECT INSTITUTE
+# ==========================
+@login_required
+def approve_institute(request, institute_id, action):
+    if request.user.user_type != "admin":
+        return redirect("admin_login")
+
+    try:
+        institute = Institute.objects.get(id=institute_id)
+
+        if action == 'approve':
+            institute.status = 'Approved'
+            institute.save()
+            messages.success(request, f"Institute '{institute.institute_name}' has been approved.")
+        elif action == 'reject':
+            institute.status = 'Rejected'
+            institute.save()
+            messages.error(request, f"Institute '{institute.institute_name}' has been rejected.")
+
+        return redirect("admin_dashboard")
+
+    except Institute.DoesNotExist:
+        messages.error(request, "Institute not found.")
+        return redirect("admin_dashboard")
